@@ -132,11 +132,11 @@ export default function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+  const ai = new GoogleGenAI("AIzaSyCaawK6yPqaB7qxv_6Y7Y8ErVI7pz2hkFk");
 
   const startScenario = (name: string, scenarioText?: string) => {
     setCurrentScenario(scenarioText || name);
-    setMessages([{ role: "model", text: "Bugün hangi konuda pratik yapmak istersin? (Örn: Maaş pazarlığı, zor bir arkadaş konuşması, akademik sunum)" }]);
+    setMessages([{ role: "model", text:scenariotext//"Merhaba!pratiğe başlayalım mı?" }]);
     setFlowPhase("needs_topic");
     setSelectedTopic("");
     setSelectedPersona("");
