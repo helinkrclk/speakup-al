@@ -7,8 +7,8 @@
 Gemini API (Google AI Studio) kullanarak kullanıcıyı gerçekçi mülakat senaryolarıyla karşılaştıran, cevaplarını analiz eden ve anlık profesyonel geri bildirim veren akıllı bir asistan.
 
 ## Canlı Demo
-**Yayın Linki:** [BURAYA LOVABLE LİNKİNİ YAPIŞTIR]
-**Demo Video:** [BURAYA LOOM VİDEO LİNKİNİ YAPIŞTIR]
+**Yayın Linki:**https://speakupal.lovable.app
+**Demo Video:** https://www.loom.com/share/f29127c94df94403bd230f6137291f12
 
 ## Kullanılan Teknolojiler
 * Gemini API (Google AI Studio)
