@@ -1,13 +1,1000 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/pages/Index.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeakUp AI | Sosyal Fobi Destek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        #chat-window { scroll-behavior: smooth; }
+        .typing-indicator::after { content: '...'; animation: typing 1s infinite; }
+        @keyframes typing { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        :root{
+            --bg1: #e0f2fe; /* sky-100 */
+            --bg2: #fce7f3; /* pink-100 */
+            --bg3: #d1fae5; /* emerald-100 */
+            --accent: #6366f1; /* indigo-500 */
+        }
+        .app-bg{
+            background:
+              radial-gradient(800px 500px at 12% 10%, color-mix(in srgb, var(--bg1) 85%, white 15%), transparent 60%),
+              radial-gradient(900px 600px at 88% 20%, color-mix(in srgb, var(--bg2) 85%, white 15%), transparent 62%),
+              radial-gradient(900px 650px at 40% 95%, color-mix(in srgb, var(--bg3) 85%, white 15%), transparent 60%),
+              linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+        }
+    </style>
+</head>
+<body class="min-h-screen app-bg flex flex-col font-sans text-gray-800 overflow-x-hidden">
 
+    <header class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold flex items-center gap-2">🎙️ SpeakUp AI</h1>
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 bg-white/15 border border-white/20 px-3 py-1.5 rounded-xl">
+                <span class="text-xs font-semibold">Renk</span>
+                <input id="theme-color" type="color" value="#6366f1" class="w-7 h-7 bg-transparent border-0 p-0 cursor-pointer" aria-label="Tema rengi seç">
+                <button id="theme-reset" class="text-xs font-bold px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition active:scale-95">Sıfırla</button>
+            </div>
+            <span class="text-xs bg-indigo-500 px-2 py-1 rounded-full italic">Buildathon Final Projesi</span>
+        </div>
+    </header>
+
+    <main id="chat-window" class="flex-1 overflow-y-auto p-3 sm:p-4">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="bg-white/55 backdrop-blur-md border border-white/70 shadow-lg rounded-3xl p-6 md:p-8">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-indigo-700/80">SpeakUp AI</p>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-1">Sosyal pratik senaryonu seç</h2>
+                        <p class="text-sm md:text-base text-gray-700 mt-2">
+                            Kartlardan birine tıklayınca role-play başlayacak. Amaç: nazikçe zorlamak, sonra yapıcı kalmak.
+                        </p>
+                    </div>
+                    <div class="hidden sm:flex items-center justify-center w-14 h-14 rounded-2xl bg-white/60 border border-white/70 shadow-sm">
+                        <span class="text-2xl">🎙️</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                    <button
+                        onclick="startScenario('İş Mülakatı')"
+                        class="text-left p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-md hover:bg-white/75 transition active:scale-[0.99]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
+                                <span class="text-lg">💼</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900">İş Mülakatı</div>
+                                <div class="text-xs text-gray-600 mt-0.5">Mülakatçı rolü, net cevap iste</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button
+                        onclick="startScenario('İlk Buluşma')"
+                        class="text-left p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-md hover:bg-white/75 transition active:scale-[0.99]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center">
+                                <span class="text-lg">🥂</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900">İlk Buluşma</div>
+                                <div class="text-xs text-gray-600 mt-0.5">Partner rolü, akıcı diyalog kur</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button
+                        onclick="startScenario('Zorlu Sunum')"
+                        class="text-left p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/70 shadow-sm hover:shadow-md hover:bg-white/75 transition active:scale-[0.99]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                                <span class="text-lg">🎤</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900">Zorlu Sunum</div>
+                                <div class="text-xs text-gray-600 mt-0.5">Jüri/profesör rolü, cesaret testi</div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Özel Rol / Konu Alanı -->
+                <div class="mt-5 rounded-3xl bg-white/60 backdrop-blur-md border border-white/70 shadow-sm p-4 md:p-5">
+                    <h3 class="font-bold text-gray-900 text-base">Kendi Senaryonu Yaz</h3>
+                    <p class="text-sm text-gray-700 mt-1">
+                        Partner/mülakatçı rolünü ve konu/hedefi yaz. Kartlarla sınırlı değilsin.
+                    </p>
+
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input id="custom-role-input" type="text" placeholder="Rol / kişi (örn: sert ama saygılı hoca)" class="w-full border border-white/70 bg-white/70 backdrop-blur-md p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900">
+                        <input id="custom-topic-input" type="text" placeholder="Konu / hedef (örn: 20 sn kendini tanıt)" class="w-full border border-white/70 bg-white/70 backdrop-blur-md p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900">
+                    </div>
+
+                    <div class="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+                        <button id="custom-start-btn" onclick="startCustomRolePlay()" class="bg-indigo-500/20 text-indigo-900 border border-indigo-500/30 px-6 py-3 rounded-2xl font-bold hover:bg-indigo-500/25 hover:shadow-[0_0_26px_rgba(99,102,241,0.25)] transition active:scale-95">
+                            Role-Play Başlat
+                        </button>
+                        <p class="text-xs text-gray-600">
+                            İpucu: Yazdıkların AI’nın karakteri olur.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="composer-footer" class="hidden p-4 bg-white/50 backdrop-blur-md border-t border-white/60">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <button id="back-btn" class="px-4 py-3 rounded-xl font-bold bg-white/60 border border-white/70 text-gray-900 hover:bg-white/75 hover:shadow-[0_0_22px_rgba(255,255,255,0.35)] transition active:scale-95">
+                <span class="inline-flex items-center gap-2">
+                    <span aria-hidden="true">⟵</span>
+                    <span class="hidden sm:inline">Ana Sayfa</span>
+                </span>
+            </button>
+            <input type="text" id="user-input" placeholder="Mesajınızı yazın..." class="flex-1 border border-white/70 bg-white/70 backdrop-blur-md p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-900">
+            <button id="send-btn" class="bg-indigo-500/20 text-indigo-900 border border-indigo-500/30 px-6 py-3 rounded-xl font-bold hover:bg-indigo-500/25 hover:shadow-[0_0_26px_rgba(99,102,241,0.25)] transition active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200">Gönder</button>
+            <button id="end-btn" disabled class="bg-rose-500/20 text-rose-900 border border-rose-500/30 px-6 py-3 rounded-xl font-bold hover:bg-rose-500/25 hover:shadow-[0_0_26px_rgba(244,63,94,0.2)] transition active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200">Sohbeti Bitir ve Analiz Et</button>
+        </div>
+    </footer>
+
+    <!-- Analiz Modalı -->
+    <div id="analysis-modal" class="hidden fixed inset-0 z-50 overflow-y-auto items-start sm:items-center justify-center bg-black/20 backdrop-blur-sm p-4">
+        <div class="bg-white/80 backdrop-blur-md border border-white/70 rounded-2xl shadow-lg max-w-2xl w-full overflow-y-auto max-h-[92vh]">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 class="text-lg font-bold text-indigo-700">Analiz Sonucu</h2>
+                <div class="flex items-center gap-2">
+                    <button id="analysis-home" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 hover:shadow-md active:scale-95 bg-white/40">⌂ Ana Sayfa</button>
+                    <button id="analysis-close" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 hover:shadow-md active:scale-95">Kapat</button>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="sm:col-span-1 rounded-2xl bg-white/70 border border-white/60 p-4">
+                        <h3 class="text-sm font-bold text-gray-900">Özgüven Skorun</h3>
+                        <p id="analysis-score" class="mt-2 text-3xl font-extrabold text-indigo-700">—</p>
+                        <p id="analysis-score-note" class="text-xs text-gray-600 mt-1">Mesajlarındaki akıcılık ve açıklık temel alınır.</p>
+                    </div>
+
+                    <div class="sm:col-span-1 rounded-2xl bg-white/70 border border-white/60 p-4">
+                        <h3 class="text-sm font-bold text-gray-900">En İyi 2 Cümlen</h3>
+                        <ol id="analysis-best-phrases" class="mt-2 list-decimal pl-5 space-y-2 text-sm text-gray-800"></ol>
+                    </div>
+
+                    <div class="sm:col-span-2 rounded-2xl bg-white/70 border border-white/60 p-4">
+                        <h3 class="text-sm font-bold text-gray-900">Gelişim Tavsiyesi</h3>
+                        <p id="analysis-advice" class="mt-2 whitespace-pre-wrap text-sm text-gray-800"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API anahtarını kaynak dosyaya gömmemek için lokalde saklıyoruz.
+        // İlk çalıştırmada prompt ile yapıştırabilirsin.
+        const API_KEY_STORAGE_KEY = "SPEAKUP_GEMINI_API_KEY";
+        const THEME_STORAGE_KEY = "SPEAKUP_THEME_COLOR";
+        let API_KEY = localStorage.getItem(API_KEY_STORAGE_KEY) || "";
+        if (!API_KEY) {
+            API_KEY = prompt("Google Gemini API anahtarını yapıştırın (lokalde saklanır):") || "";
+            if (API_KEY) localStorage.setItem(API_KEY_STORAGE_KEY, API_KEY);
+        }
+
+        function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+        function hexToRgb(hex) {
+            const h = String(hex).replace("#", "").trim();
+            if (h.length === 3) {
+                const r = parseInt(h[0] + h[0], 16);
+                const g = parseInt(h[1] + h[1], 16);
+                const b = parseInt(h[2] + h[2], 16);
+                return { r, g, b };
+            }
+            if (h.length !== 6) return null;
+            const r = parseInt(h.slice(0, 2), 16);
+            const g = parseInt(h.slice(2, 4), 16);
+            const b = parseInt(h.slice(4, 6), 16);
+            return { r, g, b };
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h = 0, s = 0;
+            const l = (max + min) / 2;
+            if (max !== min) {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h *= 60;
+            }
+            return { h, s: s * 100, l: l * 100 };
+        }
+
+        function hslToRgb(h, s, l) {
+            s /= 100; l /= 100;
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const hp = h / 60;
+            const x = c * (1 - Math.abs((hp % 2) - 1));
+            let r1 = 0, g1 = 0, b1 = 0;
+            if (0 <= hp && hp < 1) { r1 = c; g1 = x; }
+            else if (1 <= hp && hp < 2) { r1 = x; g1 = c; }
+            else if (2 <= hp && hp < 3) { g1 = c; b1 = x; }
+            else if (3 <= hp && hp < 4) { g1 = x; b1 = c; }
+            else if (4 <= hp && hp < 5) { r1 = x; b1 = c; }
+            else if (5 <= hp && hp < 6) { r1 = c; b1 = x; }
+            const m = l - c / 2;
+            return {
+                r: Math.round((r1 + m) * 255),
+                g: Math.round((g1 + m) * 255),
+                b: Math.round((b1 + m) * 255),
+            };
+        }
+
+        function rgbToHex({ r, g, b }) {
+            const toHex = (n) => n.toString(16).padStart(2, "0");
+            return `#${toHex(clamp(r, 0, 255))}${toHex(clamp(g, 0, 255))}${toHex(clamp(b, 0, 255))}`;
+        }
+
+        function makePastelPaletteFromAccent(accentHex) {
+            const rgb = hexToRgb(accentHex);
+            if (!rgb) return null;
+            const { h } = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            // 3 pastel durak: h, h+40, h+120
+            const bg1 = rgbToHex(hslToRgb((h + 0) % 360, 85, 92));
+            const bg2 = rgbToHex(hslToRgb((h + 40) % 360, 80, 92));
+            const bg3 = rgbToHex(hslToRgb((h + 120) % 360, 75, 92));
+            return { bg1, bg2, bg3, accent: accentHex };
+        }
+
+        function applyThemeColor(accentHex) {
+            const palette = makePastelPaletteFromAccent(accentHex);
+            if (!palette) return;
+            const root = document.documentElement;
+            root.style.setProperty("--bg1", palette.bg1);
+            root.style.setProperty("--bg2", palette.bg2);
+            root.style.setProperty("--bg3", palette.bg3);
+            root.style.setProperty("--accent", palette.accent);
+            // Header tonunu da hafifçe uyumla
+            const header = document.querySelector("header");
+            if (header) header.style.backgroundColor = palette.accent;
+        }
+
+        // Tema rengi: yükle + UI bağla
+        const themeColorInput = document.getElementById("theme-color");
+        const themeResetBtn = document.getElementById("theme-reset");
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme && themeColorInput) themeColorInput.value = savedTheme;
+        applyThemeColor((savedTheme || (themeColorInput ? themeColorInput.value : "#6366f1")));
+
+        if (themeColorInput) {
+            themeColorInput.addEventListener("input", () => {
+                const val = themeColorInput.value;
+                localStorage.setItem(THEME_STORAGE_KEY, val);
+                applyThemeColor(val);
+            });
+        }
+        if (themeResetBtn) {
+            themeResetBtn.addEventListener("click", () => {
+                const def = "#6366f1";
+                localStorage.setItem(THEME_STORAGE_KEY, def);
+                if (themeColorInput) themeColorInput.value = def;
+                applyThemeColor(def);
+            });
+        }
+
+        const sendBtn = document.getElementById('send-btn');
+        const endBtn = document.getElementById('end-btn');
+        const backBtn = document.getElementById('back-btn');
+        const userInput = document.getElementById('user-input');
+        const chatWindow = document.getElementById('chat-window');
+        const composerFooter = document.getElementById('composer-footer');
+        const analysisModal = document.getElementById('analysis-modal');
+        const analysisScoreEl = document.getElementById('analysis-score');
+        const analysisScoreNoteEl = document.getElementById('analysis-score-note');
+        const analysisBestPhrasesEl = document.getElementById('analysis-best-phrases');
+        const analysisAdviceEl = document.getElementById('analysis-advice');
+        let currentScenario = "";
+        const chatHistory = []; // { role: "user"|"model", text: string }
+        let typingEl = null;
+        const HOME_HTML = chatWindow.innerHTML;
+
+        // Aşamalı akış durumu
+        // phase: "needs_topic" -> kullanıcıdan konu istenir
+        // phase: "roleplay" -> persona seçilir ve role-play yürür
+        let flowPhase = "needs_topic";
+        let selectedTopic = "";
+        let selectedPersona = "";
+        let selectedTone = "";
+        let selectedDifficulty = "";
+        let justAdoptedUserRole = false;
+
+        // Başlangıçta giriş yapılana kadar gönder/bitir butonlarını kapalı tut.
+        sendBtn.disabled = true;
+        endBtn.disabled = true;
+
+        // Bazı hesaplarda model adı/versiyonu farklı olabiliyor.
+        // Model bulunamaz/endpoint desteklenmez hatasını azaltmak için sırayla deniyoruz.
+        const MODEL_CANDIDATES = [
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-002",
+            "gemini-1.5-pro",
+            "gemini-1.5-pro-002"
+        ];
+        let cachedGenerateContentModelIds = null;
+
+        function modelIdFromResourceName(name) {
+            // Örn: "models/gemini-1.5-flash" => "gemini-1.5-flash"
+            if (!name) return "";
+            const parts = String(name).split("/");
+            return parts.length ? parts[parts.length - 1] : "";
+        }
+
+        async function getGenerateContentModelIds() {
+            if (cachedGenerateContentModelIds) return cachedGenerateContentModelIds;
+            if (!API_KEY) return [];
+
+            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(API_KEY)}`;
+            const modelIds = [];
+            try {
+                const resp = await fetch(listUrl, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) throw new Error(data?.error?.message || "Models listesi alınamadı.");
+
+                const models = data?.models || [];
+                for (const m of models) {
+                    const methods =
+                        m?.supportedGenerationMethods ||
+                        m?.supported_generation_methods ||
+                        [];
+                    const methodsLower = (methods || []).map(x => String(x).toLowerCase());
+                    if (methodsLower.includes("generatecontent")) {
+                        const id = modelIdFromResourceName(m?.name) || m?.base_model_id || "";
+                        if (id) modelIds.push(id);
+                    }
+                }
+            } catch (e) {
+                // CORS veya başka bir sebep ile listModels çalışmazsa fallback kullanılır.
+                cachedGenerateContentModelIds = [];
+                console.warn("Gemini listModels çağrısı başarısız:", e);
+                return [];
+            }
+
+            cachedGenerateContentModelIds = [...new Set(modelIds)].slice(0, 10);
+            return cachedGenerateContentModelIds;
+        }
+
+        function addMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = isUser ? "flex justify-end" : "flex justify-start";
+            const bubble = document.createElement('div');
+            const bubbleBase = "p-3 shadow-sm max-w-[80%] my-1 shadow-md rounded-2xl backdrop-blur-md";
+            const bubbleClass = isUser
+                ? `bg-indigo-500/85 text-white border border-indigo-200/30 ${bubbleBase}`
+                : `bg-white/75 text-gray-900 border border-white/60 ${bubbleBase}`;
+            bubble.className = bubbleClass;
+            const p = document.createElement('p');
+            p.className = 'text-sm leading-relaxed whitespace-pre-wrap';
+            p.textContent = text;
+            bubble.appendChild(p);
+            div.appendChild(bubble);
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function getTranscriptText() {
+            // Gemini API'ye basit bir metin olarak gönderiyoruz.
+            return chatHistory
+                .map(m => (m.role === "user" ? "Kullanıcı" : "Asistan") + ": " + m.text)
+                .join("\n");
+        }
+
+        function getUserOnlyTranscriptText() {
+            return chatHistory
+                .filter(m => m.role === "user")
+                .map(m => "Kullanıcı: " + m.text)
+                .join("\n");
+        }
+
+        function normalizeForCompare(text) {
+            return String(text || "")
+                .toLowerCase()
+                .replace(/\s+/g, " ")
+                .replace(/[^\p{L}\p{N}\s]/gu, "")
+                .trim();
+        }
+
+        function simpleFollowUpQuestion(topic, lastUserMsg) {
+            const t = String(topic || "").toLowerCase();
+            const base =
+                "Peki, bir adım ileri gidelim. " +
+                "Bu durumu biraz daha netleştirmek için şunu merak ediyorum:";
+
+            if (t.includes("maaş") || t.includes("pazarlık") || t.includes("zam")) {
+                return base + " Maaş talebini ifade ederken en çok nerede takılıyorsun? Cümleni bir kez yüksek sesle söyleyecek olsan nasıl başlarsın?";
+            }
+            if (t.includes("arkadaş") || t.includes("kırıl") || t.includes("sınır") || t.includes("konuşma")) {
+                return base + " Arkadaşına ilk cümle olarak ne söylemek isterdin? Tek bir cümleyle yazmayı dener misin?";
+            }
+            if (t.includes("sunum") || t.includes("akademik") || t.includes("tez") || t.includes("proje")) {
+                return base + " Sunumunun giriş cümlesi ne olmalı sence? Tek bir giriş cümlesini yaz, sonra üzerine gidelim.";
+            }
+            if (t.includes("müşteri") || t.includes("şikayet") || t.includes("satış")) {
+                return base + " Müşteri sana ilk olarak ne söylüyor gibi hayal ediyorsun? Onun ilk cümlesini yaz, sonra buna cevap provası yapalım.";
+            }
+
+            // Genel fallback
+            return base + " Bu durumun senin için en zor kısmı ne? Bunu tek bir cümleyle tarif etmeyi dener misin?";
+        }
+
+        function askTopicMessage() {
+            return "Bugün hangi konuda pratik yapmak istersin? (Örn: Maaş pazarlığı, zor bir arkadaş konuşması, akademik sunum)";
+        }
+
+        function pickRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function pickPersonaForTopic(topic, baseScenario) {
+            const t = String(topic || "").toLowerCase();
+            const bs = String(baseScenario || "").toLowerCase();
+
+            // Kart senaryoları için varsayılan havuz
+            if (bs.includes("mülakat") || bs.includes("iş")) {
+                return pickRandom(["Mülakatçı (net ve şüpheci)", "Mülakatçı (çok sakin ama seçici)", "Mülakatçı (hızlı ve zorlayıcı)"]);
+            }
+            if (bs.includes("buluşma")) {
+                return pickRandom(["İlk buluşma partneri (meraklı ve sıcak)", "İlk buluşma partneri (çekingen ama dikkatli)", "İlk buluşma partneri (esprili ama sınırları olan)"]);
+            }
+            if (bs.includes("sunum")) {
+                return pickRandom(["Jüri üyesi (şüpheci)", "Profesör (netlik isteyen)", "Jüri üyesi (detaycı ve meraklı)"]);
+            }
+
+            // Konu anahtar kelimeleri
+            if (t.includes("maaş") || t.includes("pazarlık") || t.includes("zam")) {
+                return pickRandom(["Patron (pazarlıkçı)", "İK (kuralcı)", "Yönetici (aceleci)"]);
+            }
+            if (t.includes("arkadaş") || t.includes("kırıl") || t.includes("sınır") || t.includes("konuşması")) {
+                return pickRandom(["Zor bir arkadaş (alıngan)", "Zor bir arkadaş (savunmacı)", "Yakın arkadaş (kaçınan)"]);
+            }
+            if (t.includes("sunum") || t.includes("akademik") || t.includes("tez") || t.includes("proje")) {
+                return pickRandom(["Profesör (eleştirel ama adil)", "Jüri üyesi (meraklı)", "Dinleyici (sabırsız)"]);
+            }
+            if (t.includes("müşteri") || t.includes("satış") || t.includes("şikayet")) {
+                return pickRandom(["Müşteri (sinirli)", "Müşteri (şüpheci)", "Müşteri (çok sakin ama talepkar)"]);
+            }
+
+            // Genel: rastgele persona
+            return pickRandom([
+                "Şüpheci bir karşı taraf",
+                "Çok sakin ama net biri",
+                "Agresif olmayan ama zorlayıcı biri",
+                "Detaycı ve meraklı biri"
+            ]);
+        }
+
+        function pickToneAndDifficulty() {
+            // Her seferinde farklı başlangıç (randomness)
+            selectedTone = pickRandom(["agresif değil ama zorlayıcı", "çok sakin", "şüpheci", "aşırı net", "esprili ama ciddi"]);
+            selectedDifficulty = pickRandom(["kolay", "orta", "zor"]);
+        }
+
+        function showTypingIndicator() {
+            if (typingEl) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = "flex justify-start";
+            wrapper.id = "typing-indicator";
+            wrapper.innerHTML = `
+                <div class="bg-white/75 text-gray-900 border border-white/60 rounded-2xl p-3 shadow-sm max-w-[80%] my-1 shadow-md backdrop-blur-md">
+                    <p class="text-sm font-medium text-gray-600 typing-indicator">Düşünüyor</p>
+                </div>
+            `;
+            chatWindow.appendChild(wrapper);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            typingEl = wrapper;
+        }
+
+        function hideTypingIndicator() {
+            if (!typingEl) return;
+            typingEl.remove();
+            typingEl = null;
+        }
+
+        function updateEndBtnState() {
+            const hasUserMessage = chatHistory.some(m => m.role === "user");
+            endBtn.disabled = !(currentScenario && hasUserMessage);
+        }
+
+        async function generateWithPrompt(prompt) {
+            if (!API_KEY) return "Hata: API anahtarı yok. Lütfen anahtarı girip tekrar deneyin.";
+
+            let lastErrorMessage = "";
+            const dynamicModelIds = await getGenerateContentModelIds();
+            const modelsToTry = (dynamicModelIds && dynamicModelIds.length)
+                ? [...dynamicModelIds, ...MODEL_CANDIDATES]
+                : MODEL_CANDIDATES;
+
+            for (const model of [...new Set(modelsToTry)]) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(API_KEY)}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.8 }
+                        })
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+                    if (response.ok) {
+                        return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sonuç alınamadı.";
+                    }
+
+                    lastErrorMessage =
+                        (data && data.error && data.error.message) ? data.error.message : "Bağlantı kurulamadı.";
+                    // Model bulunamadı/endpoint desteklenmedi ise bir sonrakine geç.
+                } catch (error) {
+                    lastErrorMessage = (error && error.message) ? error.message : "Bağlantı hatası.";
+                }
+            }
+
+            const err = String(lastErrorMessage || "");
+            const looksLikeNetwork =
+                err.includes("Failed to fetch") ||
+                err.includes("NetworkError") ||
+                err.includes("ERR_") ||
+                err.includes("CORS") ||
+                err.includes("timed") ||
+                err.includes("timeout") ||
+                err.includes("ECONN") ||
+                err.includes("connect") ||
+                err.includes("TypeError");
+
+            if (looksLikeNetwork) return "Bağlantı hatası, tekrar dene.";
+            return "Sistem Hatası: " + (lastErrorMessage || "Kullanılabilir model bulunamadı.");
+        }
+
+        async function getAIResponse() {
+            // currentScenario, kartlardan geliyorsa preset isim; custom'da ise kullanıcının yazdığı role/bağlama dönüşür.
+            let roleLine = "seçtiğin senaryodaki partner/mülakatçısın. Rol tanımın/bağlamın: " + currentScenario + ".";
+            let challengeLine =
+                "Kullanıcıyı nazikçe ama net şekilde zorla: her turda 1 tane kısa meydan okuma/komut ver (kullanıcının tek bir cümle ya da tek kısa hareket yapması gibi). " +
+                "Hata olursa yapıcı şekilde düzelt; yargılama veya küçümseme yapma. " +
+                "Sonunda 1 cümlelik yapıcı geri bildirim ve 1 sonraki adım ver.";
+
+            if (currentScenario === "İş Mülakatı") {
+                roleLine = "seçtiğin senaryodaki iş mülakatçısısın";
+                challengeLine =
+                    "Kullanıcıya kısa ve güvenli bir iş mülakatı turu uygula. " +
+                    "Her mesajda tek bir soru/komut ver: kullanıcudan 20 saniyelik kendini tanıtım (1-2 cümle) ya da iş tecrübesinden tek bir örnek iste. " +
+                    "Yanlış/çekingen cevap gelirse yapıcı şekilde yeniden cümle kurdur. " +
+                    "Sonunda 1 cümlelik yapıcı geri bildirim ve bir sonraki deneme komutu ver.";
+            } else if (currentScenario === "İlk Buluşma") {
+                roleLine = "seçtiğin senaryodaki ilk buluşma partnerinsin";
+                challengeLine =
+                    "Kullanıcıya romantik olmayan, güvenli ve nazik bir role-play uygulasan. " +
+                    "Her mesajda tek bir iletişim denemesi komutu ver: örn. kendini 20 saniyede tanıt, sonra 1 soru sor. " +
+                    "Göz teması/ses tonu gibi beceriler için yapıcı mini düzeltmeler yap. " +
+                    "Sonunda 1 cümlelik yapıcı geri bildirim ve bir sonraki deneme komutu ver.";
+            } else if (currentScenario === "Zorlu Sunum") {
+                roleLine = "seçtiğin senaryodaki jüri/profesör rolündesin";
+                challengeLine =
+                    "Kullanıcıya zorlu sunum jürisi gibi davran: netlik, yapı ve güven iste. " +
+                    "Her mesajda tek bir anlık hedef ver: örn. 1 cümlelik tez, sonra tek bir destekleyici örnek cümlesi. " +
+                    "Kullanıcı takılırsa cümlesini daha net ve doğal hale getirmen için kısa bir yönlendirme yap. " +
+                    "Sonunda 1 cümlelik yapıcı geri bildirim ve bir sonraki deneme komutu ver.";
+            }
+
+            const transcript = getTranscriptText();
+            const userOnlyTranscript = getUserOnlyTranscriptText();
+            const userMsgCount = chatHistory.filter(m => m.role === "user").length;
+            const lastUserMsg = (() => {
+                for (let i = chatHistory.length - 1; i >= 0; i--) {
+                    if (chatHistory[i]?.role === "user") return String(chatHistory[i]?.text || "");
+                }
+                return "";
+            })();
+            const lastAssistantMsg = (() => {
+                for (let i = chatHistory.length - 1; i >= 0; i--) {
+                    if (chatHistory[i]?.role === "model") return String(chatHistory[i]?.text || "");
+                }
+                return "";
+            })();
+            const kickoffInstruction =
+                transcript.trim().length === 0
+                    ? "\n\nKonuşma geçmişi boşsa: Role-play'e başlamadan önce KESİNLİKLE kullanıcıdan konu iste. Örnek: 'Bugün hangi konuda pratik yapmak istersin?'."
+                    : "";
+
+            const systemPrompt =
+                "Sen SpeakUp AI sosyal koçusun. " +
+                "Sen seçilen senaryodaki partner/mülakatçısın. Kullanıcıyı sosyal olarak zorla ama sonunda yapıcı kal. " +
+                "Amacın: sosyal kaygı/sosyal fobi yaşayan kullanıcının güvenli bir ortamda maruz kalma + pratik kazanmasını sağlamak. " +
+                "GERÇEKÇİLİK: Gerçek hayattaki gibi yanıt ver; bazen kısa, bazen net, bazen şaşırmış olabilirsin ama tutarlı ol. Aşırı yapay/robotik açıklamalar yapma. " +
+                "Konu: " + (selectedTopic || currentScenario) + ". " +
+                "Dinamik persona: " + (selectedPersona || "Uygun bir karşı taraf") + ". " +
+                "Kişilik tonu: " + (selectedTone || "net ve saygılı") + ". Zorluk: " + (selectedDifficulty || "orta") + ". " +
+                "ÇEŞİTLİLİK: Asla aynı kalıplarla başlama. Her seferinde farklı bir başlangıç cümlesi seç; farklı bir zorluk derecesi ve farklı bir kişilik tonu kullan. " +
+                "DİNAMİK TAKİP: Kullanıcının SON mesajını analiz et ve bir sonraki adımı ona göre belirle. Asla bir önceki cümleni AYNEN tekrar etme. " +
+                "Önceki asistan mesajın (aynısını tekrar etme): " + (lastAssistantMsg ? ("\"" + lastAssistantMsg + "\"") : "\"\"") + ". " +
+                "SON kullanıcı mesajı: " + (lastUserMsg ? ("\"" + lastUserMsg + "\"") : "\"\"") + ". " +
+                "AKIŞ DURUMU: phase=" + flowPhase + ". " +
+                "Şu ana kadar kullanıcıdan öğrendiğin gerçekler / ipuçları (hafızan): " + (userOnlyTranscript || "\"(henüz sınırlı)\"") + ". " +
+                "Rolün: " + roleLine + ". " +
+                "Rolüne TAM bürün: karakterin dili, tavrı, soru biçimi ve beklentisi seçilen role uygun olmalı; genel koç gibi konuşma. " +
+                "Kurallar: Yargılamadan, aşağılamadan, sakin ve kısa Türkçe yaz. " +
+                "İKİ AŞAMALI AKIŞ: " +
+                "Aşama-1 (Netleştirme): Kullanıcıdan rol ve konuyu detaylandırmasını iste. Gerekirse 1-2 kısa soru sor. " +
+                "Aşama-2 (Role-play): Konu netleşince seçilen role tam bürün ve konuşmayı ilerlet: konu akışını takip ederek ilgili sorular sor, yönlendir, kısa meydan okumalar ver. " +
+                "Her mesaj kısa olacak ve şu sırayı koruyacak: (a) rol-uyumlu yanıt, (b) en fazla 1 soru, (c) 1 meydan okuma/komut, (d) 1 yapıcı geri bildirim, (e) 1 sonraki adım. " +
+                "Meydan okuma/komut mutlaka kullanıcının anlattığı konuya özel olsun; genel geçer cümle kullanma. " +
+                "Kaba/kırıcı olma: net, hafif zorlayıcı ama daima saygılı ve yapıcı ol. " +
+                "Kullanıcı kısa/kaçamak yanıt verirse: 'konuyu biraz daha detaylandır' diyerek 1 net soru sor ve tekrar denet. " +
+                "Role-play modundan çıkma; kullanıcı konu değiştirmedikçe aynı role bağlı kal. " +
+                "GELİŞTİRME ODAĞI: Kullanıcının netlik, akıcılık, sosyal giriş, soru sorma, sınır koyma gibi becerilerini mikro-geri bildirimlerle geliştir. " +
+                "Zorluk seviyesini kullanıcı zorlandığında küçült, rahatladığında artır. " +
+                "Rol davranışı: " + challengeLine + " " +
+                (flowPhase === "needs_topic"
+                    ? "\n\nŞu an phase=needs_topic. Önce konuyu netleştir (en fazla 2 kısa soru); konu netleşmeden role-play turuna tam başlamayı ertele."
+                    : "\n\nŞu an phase=roleplay. Konu zaten netleşti; tekrar 'hangi konuda pratik?' sorusuna dönme. Doğrudan role-play'i ilerlet.") +
+                (justAdoptedUserRole ? "\n\nAKIŞ KONTROLÜ: Kullanıcı bir rol tanımladı. Hemen o role bürün ve AYNEN şöyle başla: 'Harika, o halde başlıyoruz.' Ardından ilk profesyonel sorunu sor." : "") +
+                "PERSONA DERİNLİĞİ: Sen statik bir form değilsin, gerçek bir mülakatçı/karaktersin. Kullanıcı bir bilgi verdiğinde onu cebine koy ve bir sonraki aşamaya geç. Örn: Pozisyonu sorduysan ve cevap aldıysan şimdi o pozisyonla ilgili zorlayıcı bir vaka sorusu sor. " +
+                kickoffInstruction +
+                "\n\nAyrıca kullanıcıyı zorlar gibi görünse de yaklaşımın daima yapıcı olsun.";
+
+            const prompt =
+                systemPrompt +
+                "\n\nKonuşma geçmişi:\n" +
+                transcript +
+                "\n\nNot: Sadece kullanıcı mesajları:\n" + userOnlyTranscript +
+                "\n\nYanıtın (kullanıcının bir sonraki tur aksiyonuna hazırlık):";
+
+            const result = await generateWithPrompt(prompt);
+            // flag'i tek seferlik kullan
+            justAdoptedUserRole = false;
+            return result;
+        }
+
+        sendBtn.onclick = async () => {
+            const msg = userInput.value.trim();
+            if(!msg) return;
+            if(!currentScenario) { alert("Lütfen önce bir senaryo seçin!"); return; }
+
+            addMessage(msg, true);
+            chatHistory.push({ role: "user", text: msg });
+            userInput.value = "";
+            sendBtn.disabled = true;
+            endBtn.disabled = true;
+
+            // Aşama-1: kullanıcı konu seçtiyse persona belirle ve role-play'e geç
+            if (flowPhase === "needs_topic") {
+                const lower = msg.toLowerCase();
+                const looksLikeRoleDefinition =
+                    lower.startsWith("sen ") ||
+                    lower.includes("sen bir ") ||
+                    lower.includes("rol:") ||
+                    lower.includes("rolüm") ||
+                    lower.includes("rolün") ||
+                    lower.includes("ik uzman") ||
+                    lower.includes("mülakatçı") ||
+                    lower.includes("patron") ||
+                    lower.includes("jüri") ||
+                    lower.includes("profesör");
+
+                if (looksLikeRoleDefinition) {
+                    // Kullanıcı rol tanımladı: direkt persona olarak al ve role-play'e geç.
+                    selectedPersona = msg;
+                    selectedTopic = selectedTopic || currentScenario || "Genel pratik";
+                    pickToneAndDifficulty();
+                    flowPhase = "roleplay";
+                    justAdoptedUserRole = true;
+                } else {
+                    selectedTopic = msg;
+                    selectedPersona = pickPersonaForTopic(selectedTopic, currentScenario);
+                    pickToneAndDifficulty();
+                    flowPhase = "roleplay";
+                }
+            }
+
+            showTypingIndicator();
+            try {
+                let aiReply = await getAIResponse();
+                const prevAssistant = (() => {
+                    for (let i = chatHistory.length - 1; i >= 0; i--) {
+                        if (chatHistory[i]?.role === "model") return String(chatHistory[i]?.text || "");
+                    }
+                    return "";
+                })();
+
+                const repeated =
+                    prevAssistant &&
+                    normalizeForCompare(aiReply) === normalizeForCompare(prevAssistant);
+
+                // Sert tekrar koruması: aynı cevap geldiyse, modeli yeniden çağırmak yerine
+                // tek bir yeni, ilerletici soru üret.
+                if (repeated) {
+                    aiReply = simpleFollowUpQuestion(selectedTopic || currentScenario || "", msg);
+                }
+
+                addMessage(aiReply, false);
+                chatHistory.push({ role: "model", text: aiReply });
+                updateEndBtnState();
+            } finally {
+                hideTypingIndicator();
+                sendBtn.disabled = false;
+                updateEndBtnState();
+            }
+        };
+
+        userInput.onkeypress = (e) => { if(e.key === "Enter") sendBtn.click(); };
+
+        async function startScenario(name, scenarioText = name) {
+            currentScenario = scenarioText;
+            chatHistory.length = 0;
+            sendBtn.disabled = true;
+            endBtn.disabled = true;
+            analysisModal.classList.add("hidden");
+            userInput.value = "";
+            if (composerFooter) composerFooter.classList.remove("hidden");
+
+            // Aşamalı akışı sıfırla: AI direkt role başlamasın.
+            flowPhase = "needs_topic";
+            selectedTopic = "";
+            selectedPersona = "";
+            selectedTone = "";
+            selectedDifficulty = "";
+
+            chatWindow.innerHTML = `
+                <div class="text-center my-8">
+                    <span class="bg-white/70 text-gray-700 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-white/60 backdrop-blur-md">
+                        ${name} role-play başlıyor
+                    </span>
+                    <p class="text-sm text-gray-700 mt-3">
+                        Kısa ve nazikçe yönlendireceğim. Şimdi ilk tur başlıyor.
+                    </p>
+                </div>
+            `;
+
+            // İlk mesaj: kullanıcıdan konu iste (AI'ye çağrı yapmadan)
+            const q = askTopicMessage();
+            addMessage(q, false);
+            chatHistory.push({ role: "model", text: q });
+
+            // Kullanıcı cevap yazabilsin
+            sendBtn.disabled = false;
+            updateEndBtnState();
+        }
+
+        async function startCustomRolePlay() {
+            const roleInputEl = document.getElementById("custom-role-input");
+            const topicInputEl = document.getElementById("custom-topic-input");
+            const roleText = roleInputEl ? String(roleInputEl.value || "").trim() : "";
+            const topicText = topicInputEl ? String(topicInputEl.value || "").trim() : "";
+
+            if (!roleText) {
+                alert("Lütfen önce rolü yaz. Örn: 'Sert ama saygılı mülakatçı' veya 'Arkadaş gibi konuşan partner'.");
+                return;
+            }
+
+            const scenarioText =
+                "Özel rol: " + roleText +
+                (topicText ? " | Konu: " + topicText : "");
+
+            if (roleInputEl) roleInputEl.value = "";
+            if (topicInputEl) topicInputEl.value = "";
+
+            // Kartlar yerine özel bağlamla başlat.
+            await startScenario("Özel Rol", scenarioText);
+        }
+
+        function resetToHome({ keepModalOpen = false } = {}) {
+            currentScenario = "";
+            chatHistory.length = 0;
+            userInput.value = "";
+            sendBtn.disabled = true;
+            endBtn.disabled = true;
+            composerFooter.classList.add("hidden");
+            flowPhase = "needs_topic";
+            selectedTopic = "";
+            selectedPersona = "";
+            selectedTone = "";
+            selectedDifficulty = "";
+            const roleInputEl = document.getElementById("custom-role-input");
+            const topicInputEl = document.getElementById("custom-topic-input");
+            if (roleInputEl) roleInputEl.value = "";
+            if (topicInputEl) topicInputEl.value = "";
+
+            if (!keepModalOpen) analysisModal.classList.add("hidden");
+            hideTypingIndicator();
+            chatWindow.innerHTML = HOME_HTML;
+        }
+
+        if (backBtn) {
+            backBtn.onclick = () => resetToHome({ keepModalOpen: false });
+        }
+
+        async function getAnalysisResponse() {
+            if (!API_KEY) return "Hata: API anahtarı yok. Lütfen anahtarı girip tekrar deneyin.";
+
+            const analysisPrompt =
+                "Sen bir sosyal kaygı (sosyal fobi) koçu ve davranışsal geri bildirim asistanısın. " +
+                "Aşağıdaki konuşma geçmişi SADECE kullanıcının mesajlarıdır. Bu mesajları analiz et. Asistanın mesajlarını asla dahil etme. " +
+                "Kullanıcıyı yargılamadan, güvenli ve destekleyici bir dille geri bildirim ver. " +
+                "GERÇEKÇİ ama NAZİK ol: abartılı övgü verme; somut güçlü yanlar ve somut geliştirme alanları söyle. " +
+                "LÜTFEN SIKICA ŞUNU YAP: Sadece geçerli JSON döndür. Markdown, açıklama veya başlık EKLEME. " +
+                "JSON şeması (tam olarak bu alanlar): " +
+                "{ \"confidenceScore\": number (0-100), \"bestPhrases\": [string, string], \"advice\": string }" +
+                ".confidenceScore: 0-100 arası TAMSAYI olmalı. " +
+                ".bestPhrases: SADECE kullanıcı mesajlarından en iyi 2 cümle (tam cümle). Eksik veri varsa ikinci elemanı boş string olarak döndür. " +
+                ".advice: Mutlaka şu düzeni uygula ve hepsi aynı string içinde olsun: " +
+                "\"+ Güçlü yanlar:\\n- ...\\n- ...\\nΔ Geliştirme alanları:\\n- ...\\n- ...\\n→ Tavsiye:\\n- ...\\n- ...\" " +
+                "Satırları mutlaka \"\\n- \" ile yaz. Tekrarlı cümleler üretme. 500-700 karakteri geçme.";
+
+            const prompt =
+                analysisPrompt +
+                "\n\nSenaryo: " + currentScenario +
+                "\n\nKullanıcı mesajları:\n" + getUserOnlyTranscriptText();
+
+            const raw = await generateWithPrompt(prompt);
+
+            if (typeof raw !== "string") return { error: "Analiz sonucu alınamadı." };
+            if (raw.trim().toLowerCase().includes("bağlantı hatası")) return { error: raw };
+            if (raw.trim().toLowerCase().startsWith("sistem hatası")) return { error: raw };
+
+            const extractFirstJsonBlock = (s) => {
+                const str = String(s);
+                const start = str.indexOf("{");
+                const end = str.lastIndexOf("}");
+                if (start === -1 || end === -1 || end <= start) return null;
+                return str.slice(start, end + 1);
+            };
+
+            const parsed = (() => {
+                try {
+                    const jsonBlock = extractFirstJsonBlock(raw);
+                    if (!jsonBlock) throw new Error("json block not found");
+                    const obj = JSON.parse(jsonBlock);
+
+                    const confidenceScore = Number(obj?.confidenceScore ?? obj?.confidence_score ?? obj?.score);
+                    const bestPhrasesRaw = obj?.bestPhrases ?? obj?.best_phrases ?? obj?.bestPhrases;
+                    const advice = String(obj?.advice ?? obj?.gelişimTavsiyesi ?? obj?.gelisimTavsiyesi ?? obj?.recommendation ?? "");
+
+                    const bestPhrases = Array.isArray(bestPhrasesRaw)
+                        ? bestPhrasesRaw.map(x => String(x)).slice(0, 2)
+                        : [];
+
+                    return {
+                        confidenceScore: Number.isFinite(confidenceScore) ? confidenceScore : null,
+                        bestPhrases,
+                        advice: advice || (raw.length ? raw : "—")
+                    };
+                } catch (e) {
+                    return {
+                        confidenceScore: null,
+                        bestPhrases: [],
+                        advice: raw
+                    };
+                }
+            })();
+
+            // Advice metnini kısalt + tekrarları azalt (model bazen uzuyor).
+            const cleanupAdvice = (s) => {
+                if (typeof s !== "string") return "—";
+                let text = s.replace(/\s+/g, " ").trim();
+                if (!text) return "—";
+
+                // Eğer madde işaretli geldiyse ilk 6 satırla sınırla.
+                const hasBullets = text.includes("\n") && /(^|\n)\s*[-•]\s*/.test(text);
+                if (hasBullets) {
+                    const lines = s
+                        .split(/\r?\n/)
+                        .map(x => x.trim())
+                        .filter(Boolean)
+                        .filter(x => /^[-•]/.test(x));
+                    if (lines.length) {
+                        const limited = lines.slice(0, 6).join("\n");
+                        return limited;
+                    }
+                }
+
+                // Cümle bazlı kısa kesim + basit tekrar azaltma
+                const parts = text.match(/[^.!?]+[.!?]+/g) || [text];
+                const seen = new Set();
+                const selected = [];
+                for (const p of parts) {
+                    const norm = p.toLowerCase().replace(/\s+/g, " ").trim();
+                    if (!norm) continue;
+                    if (seen.has(norm)) continue;
+                    seen.add(norm);
+                    selected.push(p);
+                    if (selected.length >= 4) break;
+                }
+
+                const joined = selected.join(" ").trim() || text;
+                return joined.length > 750 ? joined.slice(0, 750).trim() + "…" : joined;
+            };
+
+            if (!parsed || typeof parsed !== "object") return parsed;
+            if (parsed.advice) parsed.advice = cleanupAdvice(parsed.advice);
+            return parsed;
+        }
+
+        function openAnalysisModal(analysis) {
+            analysisModal.classList.remove("hidden");
+
+            // Default / reset
+            analysisScoreEl.textContent = "—";
+            if (analysisBestPhrasesEl) analysisBestPhrasesEl.innerHTML = "";
+            analysisAdviceEl.textContent = "";
+            if (analysisScoreNoteEl) analysisScoreNoteEl.textContent = "Mesajlarındaki akıcılık ve açıklık temel alınır.";
+
+            if (typeof analysis === "string") {
+                analysisAdviceEl.textContent = analysis;
+                return;
+            }
+
+            if (!analysis) {
+                analysisAdviceEl.textContent = "Analiz sonucu alınamadı.";
+                return;
+            }
+
+            if (analysis.error) {
+                analysisAdviceEl.textContent = analysis.error;
+                if (analysisScoreNoteEl) analysisScoreNoteEl.textContent = "Analiz şu an çalışmadı (hata).";
+                return;
+            }
+
+            const score = analysis.confidenceScore;
+            if (Number.isFinite(score)) {
+                analysisScoreEl.textContent = Math.round(score) + " / 100";
+            }
+
+            const phrases = Array.isArray(analysis.bestPhrases) ? analysis.bestPhrases : [];
+            const phrase1 = phrases[0] || "—";
+            const phrase2 = phrases[1] || "—";
+
+            const li1 = document.createElement("li");
+            li1.textContent = phrase1;
+            const li2 = document.createElement("li");
+            li2.textContent = phrase2;
+            analysisBestPhrasesEl.appendChild(li1);
+            analysisBestPhrasesEl.appendChild(li2);
+
+            analysisAdviceEl.textContent = analysis.advice || "—";
+        }
+
+        endBtn.onclick = async () => {
+            if (!currentScenario) { alert("Önce bir senaryo seçin."); return; }
+            if (!chatHistory.some(m => m.role === "user")) return;
+
+            sendBtn.disabled = true;
+            endBtn.disabled = true;
+            showTypingIndicator();
+            try {
+                const analysis = await getAnalysisResponse();
+                openAnalysisModal(analysis);
+                // Sohbeti kapatıp ana sayfaya dön; rapor modal içinde kalsın.
+                resetToHome({ keepModalOpen: true });
+            } finally {
+                hideTypingIndicator();
+                sendBtn.disabled = true;
+                endBtn.disabled = true;
+            }
+        };
+
+        document.getElementById('analysis-close').onclick = () => resetToHome({ keepModalOpen: false });
+        document.getElementById('analysis-home').onclick = () => resetToHome({ keepModalOpen: false });
+    </script>
+</body>
+</html>
